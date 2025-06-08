@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Service Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-envelope"></i> Email Service Dashboard</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="totalSent">0</span>
+                    <span class="stat-label">Sent</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="totalFailed">0</span>
+                    <span class="stat-label">Failed</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="successRate">0%</span>
+                    <span class="stat-label">Success Rate</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Single Email Section -->
+            <section class="card">
+                <h2><i class="fas fa-paper-plane"></i> Send Single Email</h2>
+                <div class="form-group">
+                    <label for="emailTo">To:</label>
+                    <input type="email" id="emailTo" placeholder="recipient@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="emailSubject">Subject:</label>
+                    <input type="text" id="emailSubject" placeholder="Email subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="emailBody">Message:</label>
+                    <textarea id="emailBody" rows="5" placeholder="Your message here..."></textarea>
+                </div>
+                <button class="btn btn-primary" onclick="sendSingleEmail()">
+                    <i class="fas fa-paper-plane"></i> Send Email
+                </button>
+            </section>
+
+            <!-- Bulk Email Section -->
+            <section class="card">
+                <h2><i class="fas fa-envelope-bulk"></i> Bulk Email Operations</h2>
+                <div class="bulk-actions">
+                    <button class="btn btn-secondary" onclick="showBulkModal(5)">
+                        <i class="fas fa-list"></i> Send 5 Emails
+                    </button>
+                    <button class="btn btn-warning" onclick="showBulkModal(100)">
+                        <i class="fas fa-bolt"></i> High Load Test (100)
+                    </button>
+                </div>
+            </section>
+
+            <!-- Inbox Section -->
+            <section class="card">
+                <div class="inbox-header">
+                    <h2><i class="fas fa-inbox"></i> Inbox (<span id="inboxCount">0</span>)</h2>
+                    <div class="inbox-actions">
+                        <button class="btn btn-sm" onclick="simulateIncomingEmail()">
+                            <i class="fas fa-plus"></i> Simulate Email
+                        </button>
+                        <button class="btn btn-sm" onclick="refreshInbox()">
+                            <i class="fas fa-refresh"></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div id="inboxContainer" class="inbox-container">
+                    <!-- Inbox emails will be populated here -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Bulk Email Modal -->
+    <div id="bulkEmailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Send Bulk Emails</h3>
+                <button class="close-btn" onclick="closeModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="bulkSubject">Subject:</label>
+                    <input type="text" id="bulkSubject" placeholder="Bulk email subject" value="Bulk Email Test">
+                </div>
+                <div class="form-group">
+                    <label for="bulkBody">Message:</label>
+                    <textarea id="bulkBody" rows="4"
+                        placeholder="Bulk email message">This is a test bulk email message.</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Recipients:</label>
+                    <div id="emailListContainer" class="email-list">
+                        <!-- Email inputs will be added here -->
+                    </div>
+                    <button class="btn btn-sm btn-secondary" onclick="addEmailRow()">
+                        <i class="fas fa-plus"></i> Add Email
+                    </button>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div id="progressBar" class="progress-fill"></div>
+                    </div>
+                    <div id="progressText" class="progress-text">0% Complete</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button id="sendBulkBtn" class="btn btn-primary" onclick="sendBulkEmails()">
+                    <i class="fas fa-paper-plane"></i> Send Emails
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Email Detail Modal -->
+    <div id="emailDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="emailDetailSubject">Email Subject</h3>
+                <button class="close-btn" onclick="closeDetailModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="email-meta">
+                    <div><strong>From:</strong> <span id="emailDetailFrom"></span></div>
+                    <div><strong>To:</strong> <span id="emailDetailTo"></span></div>
+                    <div><strong>Date:</strong> <span id="emailDetailDate"></span></div>
+                </div>
+                <div class="email-content">
+                    <pre id="emailDetailBody"></pre>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeDetailModal()">Close</button>
+                <button class="btn btn-primary" onclick="replyToEmail()">
+                    <i class="fas fa-reply"></i> Reply
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification">
+        <i class="fas fa-info-circle"></i>
+        <span id="notification-message">Notification message</span>
+    </div>
+<script src="js/script.js"></script>
+</body>
+
+</html>
